@@ -30,14 +30,22 @@ Resources:
             - sts:AssumeRole
       Path: "/cfn/"
       Policies:
-      - PolicyName: SSM
+      - PolicyName: ECS
         PolicyDocument:
           Statement:
           - Effect: Allow
             Action:
-            - ssm:GetParametersByPath
+            - ecs:RunTask
             Resource:
-            - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/pd-iot-doorbell"
+            - !Ref FargateECSTaskDefinition
+      - PolicyName: IAM
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+            - iam:PassRole
+            Resource:
+            - !GetAtt FargateExecutionRole.Arn
 
   SpawnFargateFunction:
     Type: AWS::Serverless::Function
